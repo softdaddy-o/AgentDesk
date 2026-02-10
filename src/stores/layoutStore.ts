@@ -1,131 +1,168 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type SplitDirection = 'none' | 'horizontal' | 'vertical' | 'grid';
+// --- Tree-based pane model ---
 
-export interface Pane {
+export interface LeafPane {
+    type: 'leaf';
     id: string;
     sessionId: string | null;
 }
 
-interface LayoutState {
-    splitDirection: SplitDirection;
-    panes: Pane[];
-    activePaneId: string;
-    splitRatio: number;       // 0-1, for horizontal/vertical (first pane fraction)
-    gridRatioH: number;       // horizontal ratio for grid
-    gridRatioV: number;       // vertical ratio for grid
+export interface SplitPane {
+    type: 'split';
+    id: string;
+    direction: 'horizontal' | 'vertical';
+    ratio: number;
+    children: [PaneNode, PaneNode];
+}
 
-    splitHorizontal: () => void;
-    splitVertical: () => void;
-    splitGrid: () => void;
-    closeSplit: () => void;
+export type PaneNode = LeafPane | SplitPane;
+
+// --- Tree helpers ---
+
+function makeLeaf(sessionId: string | null = null): LeafPane {
+    return { type: 'leaf', id: crypto.randomUUID(), sessionId };
+}
+
+function splitLeaf(node: PaneNode, targetId: string, direction: 'horizontal' | 'vertical'): PaneNode {
+    if (node.type === 'leaf') {
+        if (node.id === targetId) {
+            return {
+                type: 'split',
+                id: crypto.randomUUID(),
+                direction,
+                ratio: 0.5,
+                children: [{ ...node }, makeLeaf()],
+            };
+        }
+        return node;
+    }
+    return {
+        ...node,
+        children: [
+            splitLeaf(node.children[0], targetId, direction),
+            splitLeaf(node.children[1], targetId, direction),
+        ],
+    };
+}
+
+function removeLeaf(node: PaneNode, targetId: string): PaneNode | null {
+    if (node.type === 'leaf') {
+        return node.id === targetId ? null : node;
+    }
+    const left = removeLeaf(node.children[0], targetId);
+    const right = removeLeaf(node.children[1], targetId);
+    if (left === null) return right;
+    if (right === null) return left;
+    return { ...node, children: [left, right] };
+}
+
+function updateLeafSession(node: PaneNode, targetId: string, sessionId: string): PaneNode {
+    if (node.type === 'leaf') {
+        return node.id === targetId ? { ...node, sessionId } : node;
+    }
+    return {
+        ...node,
+        children: [
+            updateLeafSession(node.children[0], targetId, sessionId),
+            updateLeafSession(node.children[1], targetId, sessionId),
+        ],
+    };
+}
+
+function updateSplitRatio(node: PaneNode, splitId: string, ratio: number): PaneNode {
+    if (node.type === 'leaf') return node;
+    if (node.id === splitId) {
+        return { ...node, ratio: Math.max(0.15, Math.min(0.85, ratio)) };
+    }
+    return {
+        ...node,
+        children: [
+            updateSplitRatio(node.children[0], splitId, ratio),
+            updateSplitRatio(node.children[1], splitId, ratio),
+        ],
+    };
+}
+
+function collectLeaves(node: PaneNode): LeafPane[] {
+    if (node.type === 'leaf') return [node];
+    return [...collectLeaves(node.children[0]), ...collectLeaves(node.children[1])];
+}
+
+function findLeaf(node: PaneNode, leafId: string): LeafPane | null {
+    if (node.type === 'leaf') return node.id === leafId ? node : null;
+    return findLeaf(node.children[0], leafId) ?? findLeaf(node.children[1], leafId);
+}
+
+// --- Store ---
+
+interface LayoutState {
+    root: PaneNode;
+    activePaneId: string;
+
+    splitPane: (paneId: string, direction: 'horizontal' | 'vertical') => void;
     closePane: (paneId: string) => void;
     setActivePane: (paneId: string) => void;
     setPaneSession: (paneId: string, sessionId: string) => void;
-    setSplitRatio: (ratio: number) => void;
-    setGridRatioH: (ratio: number) => void;
-    setGridRatioV: (ratio: number) => void;
+    setSplitRatio: (splitId: string, ratio: number) => void;
+    resetLayout: () => void;
+
+    // Derived helpers (not stored, computed on call)
+    getLeaves: () => LeafPane[];
+    getActiveLeaf: () => LeafPane | null;
+    getLeafCount: () => number;
 }
 
-const DEFAULT_PANE: Pane = { id: 'pane-1', sessionId: null };
-
-function makePanes(count: number, existing: Pane[]): Pane[] {
-    const panes: Pane[] = [];
-    for (let i = 0; i < count; i++) {
-        panes.push(existing[i] ?? { id: `pane-${i + 1}`, sessionId: null });
-    }
-    return panes;
-}
-
-function clampRatio(ratio: number): number {
-    return Math.max(0.15, Math.min(0.85, ratio));
-}
+const DEFAULT_ROOT: LeafPane = { type: 'leaf', id: 'pane-root', sessionId: null };
 
 export const useLayoutStore = create<LayoutState>()(
     persist(
-        (set) => ({
-            splitDirection: 'none',
-            panes: [DEFAULT_PANE],
-            activePaneId: 'pane-1',
-            splitRatio: 0.5,
-            gridRatioH: 0.5,
-            gridRatioV: 0.5,
+        (set, get) => ({
+            root: DEFAULT_ROOT,
+            activePaneId: 'pane-root',
 
-            splitHorizontal: () =>
-                set((state) => {
-                    if (state.splitDirection === 'horizontal') return state;
-                    return {
-                        splitDirection: 'horizontal',
-                        panes: makePanes(2, state.panes),
-                        splitRatio: 0.5,
-                    };
-                }),
-
-            splitVertical: () =>
-                set((state) => {
-                    if (state.splitDirection === 'vertical') return state;
-                    return {
-                        splitDirection: 'vertical',
-                        panes: makePanes(2, state.panes),
-                        splitRatio: 0.5,
-                    };
-                }),
-
-            splitGrid: () =>
-                set((state) => {
-                    if (state.splitDirection === 'grid') return state;
-                    return {
-                        splitDirection: 'grid',
-                        panes: makePanes(4, state.panes),
-                        gridRatioH: 0.5,
-                        gridRatioV: 0.5,
-                    };
-                }),
-
-            closeSplit: () =>
+            splitPane: (paneId, direction) =>
                 set((state) => ({
-                    splitDirection: 'none',
-                    panes: [state.panes[0] ?? DEFAULT_PANE],
-                    activePaneId: state.panes[0]?.id ?? 'pane-1',
-                    splitRatio: 0.5,
+                    root: splitLeaf(state.root, paneId, direction),
                 })),
 
             closePane: (paneId) =>
                 set((state) => {
-                    if (state.panes.length <= 1) return state;
-                    const remaining = state.panes.filter((p) => p.id !== paneId);
-                    const newDirection = remaining.length <= 1 ? 'none' as const : state.splitDirection;
-                    return {
-                        panes: remaining.length === 0 ? [DEFAULT_PANE] : remaining,
-                        splitDirection: newDirection,
-                        activePaneId:
-                            state.activePaneId === paneId
-                                ? remaining[0]?.id ?? 'pane-1'
-                                : state.activePaneId,
-                    };
+                    const leaves = collectLeaves(state.root);
+                    if (leaves.length <= 1) return state;
+                    const newRoot = removeLeaf(state.root, paneId);
+                    if (!newRoot) return state;
+                    const newLeaves = collectLeaves(newRoot);
+                    const newActive = state.activePaneId === paneId
+                        ? newLeaves[0]?.id ?? 'pane-root'
+                        : state.activePaneId;
+                    return { root: newRoot, activePaneId: newActive };
                 }),
 
             setActivePane: (paneId) => set({ activePaneId: paneId }),
 
             setPaneSession: (paneId, sessionId) =>
                 set((state) => ({
-                    panes: state.panes.map((p) =>
-                        p.id === paneId ? { ...p, sessionId } : p,
-                    ),
+                    root: updateLeafSession(state.root, paneId, sessionId),
                 })),
 
-            setSplitRatio: (ratio) => set({ splitRatio: clampRatio(ratio) }),
-            setGridRatioH: (ratio) => set({ gridRatioH: clampRatio(ratio) }),
-            setGridRatioV: (ratio) => set({ gridRatioV: clampRatio(ratio) }),
+            setSplitRatio: (splitId, ratio) =>
+                set((state) => ({
+                    root: updateSplitRatio(state.root, splitId, ratio),
+                })),
+
+            resetLayout: () =>
+                set({ root: { ...DEFAULT_ROOT }, activePaneId: 'pane-root' }),
+
+            getLeaves: () => collectLeaves(get().root),
+            getActiveLeaf: () => findLeaf(get().root, get().activePaneId),
+            getLeafCount: () => collectLeaves(get().root).length,
         }),
         {
             name: 'agentdesk-layout',
             partialize: (state) => ({
-                splitDirection: state.splitDirection,
-                splitRatio: state.splitRatio,
-                gridRatioH: state.gridRatioH,
-                gridRatioV: state.gridRatioV,
+                root: state.root,
             }),
         },
     ),

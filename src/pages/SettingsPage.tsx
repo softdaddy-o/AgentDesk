@@ -95,16 +95,8 @@ export default function SettingsPage() {
                         <span>Split Vertical</span>
                     </div>
                     <div className="shortcut-row">
-                        <span className="shortcut-keys">Ctrl+Shift+G</span>
-                        <span>Grid Layout (2x2)</span>
-                    </div>
-                    <div className="shortcut-row">
                         <span className="shortcut-keys">Ctrl+Shift+W</span>
-                        <span>Close Split</span>
-                    </div>
-                    <div className="shortcut-row">
-                        <span className="shortcut-keys">Ctrl+1-4</span>
-                        <span>Focus Pane</span>
+                        <span>Close Active Pane</span>
                     </div>
                 </div>
             </div>

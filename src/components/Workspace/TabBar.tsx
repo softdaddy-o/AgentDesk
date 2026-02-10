@@ -12,11 +12,11 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function TabBar() {
     const sessions = useSessionStore((s) => s.sessions);
-    const panes = useLayoutStore((s) => s.panes);
     const activePaneId = useLayoutStore((s) => s.activePaneId);
     const setPaneSession = useLayoutStore((s) => s.setPaneSession);
+    const activeLeaf = useLayoutStore((s) => s.getActiveLeaf());
 
-    const activePaneSessionId = panes.find((p) => p.id === activePaneId)?.sessionId;
+    const activePaneSessionId = activeLeaf?.sessionId;
     const sessionList = [...sessions.entries()];
 
     if (sessionList.length === 0) return null;

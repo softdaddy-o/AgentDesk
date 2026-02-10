@@ -1,33 +1,52 @@
-import { type ReactNode, useRef, useCallback } from 'react';
-import { useLayoutStore } from '../../stores/layoutStore';
+import { useRef, useCallback } from 'react';
+import { useLayoutStore, type PaneNode } from '../../stores/layoutStore';
+import PaneView from './PaneView';
 
-interface SplitLayoutProps {
-    children: ReactNode[];
+export default function PaneTree({ node }: { node: PaneNode }) {
+    if (node.type === 'leaf') {
+        return <PaneView paneId={node.id} sessionId={node.sessionId} />;
+    }
+
+    return (
+        <SplitContainer
+            splitId={node.id}
+            direction={node.direction}
+            ratio={node.ratio}
+            left={node.children[0]}
+            right={node.children[1]}
+        />
+    );
 }
 
-export default function SplitLayout({ children }: SplitLayoutProps) {
-    const splitDirection = useLayoutStore((s) => s.splitDirection);
-    const splitRatio = useLayoutStore((s) => s.splitRatio);
-    const gridRatioH = useLayoutStore((s) => s.gridRatioH);
-    const gridRatioV = useLayoutStore((s) => s.gridRatioV);
+function SplitContainer({
+    splitId,
+    direction,
+    ratio,
+    left,
+    right,
+}: {
+    splitId: string;
+    direction: 'horizontal' | 'vertical';
+    ratio: number;
+    left: PaneNode;
+    right: PaneNode;
+}) {
     const setSplitRatio = useLayoutStore((s) => s.setSplitRatio);
-    const setGridRatioH = useLayoutStore((s) => s.setGridRatioH);
-    const setGridRatioV = useLayoutStore((s) => s.setGridRatioV);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const startDrag = useCallback(
-        (axis: 'x' | 'y', setter: (ratio: number) => void) => (e: React.MouseEvent) => {
+        (e: React.MouseEvent) => {
             e.preventDefault();
             const container = containerRef.current;
             if (!container) return;
-
             const rect = container.getBoundingClientRect();
+            const isH = direction === 'horizontal';
 
             const onMove = (e: MouseEvent) => {
-                const ratio = axis === 'x'
+                const pos = isH
                     ? (e.clientX - rect.left) / rect.width
                     : (e.clientY - rect.top) / rect.height;
-                setter(ratio);
+                setSplitRatio(splitId, pos);
             };
 
             const onUp = () => {
@@ -37,93 +56,32 @@ export default function SplitLayout({ children }: SplitLayoutProps) {
                 document.body.style.userSelect = '';
             };
 
-            document.body.style.cursor = axis === 'x' ? 'col-resize' : 'row-resize';
+            document.body.style.cursor = isH ? 'col-resize' : 'row-resize';
             document.body.style.userSelect = 'none';
             document.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onUp);
         },
-        [],
+        [direction, splitId, setSplitRatio],
     );
 
-    if (splitDirection === 'none') {
-        return (
-            <div ref={containerRef} className="split-layout split-none">
-                {children[0]}
-            </div>
-        );
-    }
+    const isH = direction === 'horizontal';
+    const firstSize = `calc(${ratio * 100}% - 2px)`;
+    const secondSize = `calc(${(1 - ratio) * 100}% - 2px)`;
 
-    if (splitDirection === 'horizontal') {
-        const pct = splitRatio * 100;
-        return (
-            <div ref={containerRef} className="split-layout split-horizontal">
-                <div className="split-pane" style={{ width: `calc(${pct}% - 2px)` }}>
-                    {children[0]}
-                </div>
-                <div
-                    className="resize-handle resize-handle-h"
-                    onMouseDown={startDrag('x', setSplitRatio)}
-                />
-                <div className="split-pane" style={{ width: `calc(${100 - pct}% - 2px)` }}>
-                    {children[1]}
-                </div>
-            </div>
-        );
-    }
-
-    if (splitDirection === 'vertical') {
-        const pct = splitRatio * 100;
-        return (
-            <div ref={containerRef} className="split-layout split-vertical">
-                <div className="split-pane" style={{ height: `calc(${pct}% - 2px)` }}>
-                    {children[0]}
-                </div>
-                <div
-                    className="resize-handle resize-handle-v"
-                    onMouseDown={startDrag('y', setSplitRatio)}
-                />
-                <div className="split-pane" style={{ height: `calc(${100 - pct}% - 2px)` }}>
-                    {children[1]}
-                </div>
-            </div>
-        );
-    }
-
-    // Grid: 2x2
-    const hPct = gridRatioH * 100;
-    const vPct = gridRatioV * 100;
     return (
-        <div ref={containerRef} className="split-layout split-grid-layout">
-            {/* Top row */}
-            <div className="split-grid-row" style={{ height: `calc(${vPct}% - 2px)` }}>
-                <div className="split-pane" style={{ width: `calc(${hPct}% - 2px)` }}>
-                    {children[0]}
-                </div>
-                <div
-                    className="resize-handle resize-handle-h"
-                    onMouseDown={startDrag('x', setGridRatioH)}
-                />
-                <div className="split-pane" style={{ width: `calc(${100 - hPct}% - 2px)` }}>
-                    {children[1]}
-                </div>
+        <div
+            ref={containerRef}
+            className={`split-container ${isH ? 'split-h' : 'split-v'}`}
+        >
+            <div className="split-child" style={isH ? { width: firstSize } : { height: firstSize }}>
+                <PaneTree node={left} />
             </div>
-            {/* Horizontal divider */}
             <div
-                className="resize-handle resize-handle-v"
-                onMouseDown={startDrag('y', setGridRatioV)}
+                className={`resize-handle ${isH ? 'resize-handle-h' : 'resize-handle-v'}`}
+                onMouseDown={startDrag}
             />
-            {/* Bottom row */}
-            <div className="split-grid-row" style={{ height: `calc(${100 - vPct}% - 2px)` }}>
-                <div className="split-pane" style={{ width: `calc(${hPct}% - 2px)` }}>
-                    {children[2]}
-                </div>
-                <div
-                    className="resize-handle resize-handle-h"
-                    onMouseDown={startDrag('x', setGridRatioH)}
-                />
-                <div className="split-pane" style={{ width: `calc(${100 - hPct}% - 2px)` }}>
-                    {children[3]}
-                </div>
+            <div className="split-child" style={isH ? { width: secondSize } : { height: secondSize }}>
+                <PaneTree node={right} />
             </div>
         </div>
     );
