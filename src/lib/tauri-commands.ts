@@ -74,3 +74,15 @@ export async function getSessionCostSummary(sessionId: string): Promise<SessionC
 export async function getGlobalCostSummary(): Promise<GlobalCostSummary> {
     return invoke('get_global_cost_summary');
 }
+
+// Platform
+export interface PlatformDefaults {
+    defaultShell: string;
+    defaultShellArgs: string[];
+    homeDir: string;
+    os: string;
+}
+
+export async function getPlatformDefaults(): Promise<PlatformDefaults> {
+    return invoke('get_platform_defaults');
+}

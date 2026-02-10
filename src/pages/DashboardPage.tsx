@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
 import SessionCard from '../components/Session/SessionCard';
 import SessionConfigDialog from '../components/Session/SessionConfigDialog';
 import QuickLaunchBar from '../components/Session/QuickLaunchBar';
-import { stopSession } from '../lib/tauri-commands';
+import { stopSession, getPlatformDefaults, type PlatformDefaults } from '../lib/tauri-commands';
 import { DEFAULT_COLS, DEFAULT_ROWS, TOOL_COMMANDS } from '../lib/constants';
 import type { CliTool, SessionConfig } from '../lib/types';
 
@@ -13,19 +13,26 @@ export default function DashboardPage() {
     const addSession = useSessionStore((s) => s.addSession);
     const setActiveSession = useSessionStore((s) => s.setActiveSession);
     const [showDialog, setShowDialog] = useState(false);
+    const [platform, setPlatform] = useState<PlatformDefaults | null>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getPlatformDefaults().then(setPlatform);
+    }, []);
 
     const handleCreate = useCallback(
         (tool: CliTool, name: string, workingDir: string) => {
             const id = crypto.randomUUID();
             const toolConfig = TOOL_COMMANDS[tool] ?? TOOL_COMMANDS.Custom;
+            const defaultShell = platform?.defaultShell ?? 'cmd.exe';
+            const defaultHome = platform?.homeDir ?? '';
             const config: SessionConfig = {
                 id,
                 name: name || `${tool} Session`,
                 tool,
-                command: tool === 'Custom' ? 'cmd.exe' : toolConfig.command,
-                args: toolConfig.args,
-                workingDir: workingDir || 'C:\\',
+                command: tool === 'Custom' ? defaultShell : toolConfig.command,
+                args: tool === 'Custom' ? (platform?.defaultShellArgs ?? []) : toolConfig.args,
+                workingDir: workingDir || defaultHome,
                 envVars: {},
                 cols: DEFAULT_COLS,
                 rows: DEFAULT_ROWS,
@@ -35,7 +42,7 @@ export default function DashboardPage() {
             setShowDialog(false);
             navigate(`/session/${id}`);
         },
-        [addSession, setActiveSession, navigate],
+        [addSession, setActiveSession, navigate, platform],
     );
 
     const handleQuickLaunch = useCallback(
