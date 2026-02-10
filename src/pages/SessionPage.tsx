@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
-import TerminalView from '../components/Terminal/TerminalView';
+import SessionOutput from '../components/Terminal/SessionOutput';
 import TerminalToolbar from '../components/Terminal/TerminalToolbar';
 
 export default function SessionPage() {
@@ -24,7 +24,7 @@ export default function SessionPage() {
         <div className="session-view">
             <TerminalToolbar sessionId={sessionId} />
             <div className="terminal-container">
-                <TerminalView key={sessionId} sessionConfig={session.config} />
+                <SessionOutput key={sessionId} sessionConfig={session.config} />
             </div>
         </div>
     );

@@ -10,10 +10,16 @@ interface SessionOutputProps {
 
 export default function SessionOutput({ sessionConfig }: SessionOutputProps) {
     const [mode, setMode] = useState<'raw' | 'markdown'>('raw');
+    const [markdownContent, setMarkdownContent] = useState('');
     const outputBufferRef = useRef('');
 
     const appendToBuffer = useCallback((text: string) => {
         outputBufferRef.current += text;
+    }, []);
+
+    const switchToMarkdown = useCallback(() => {
+        setMarkdownContent(ansiToMarkdown(outputBufferRef.current));
+        setMode('markdown');
     }, []);
 
     return (
@@ -27,7 +33,7 @@ export default function SessionOutput({ sessionConfig }: SessionOutputProps) {
                 </button>
                 <button
                     className={`mode-btn ${mode === 'markdown' ? 'active' : ''}`}
-                    onClick={() => setMode('markdown')}
+                    onClick={switchToMarkdown}
                 >
                     Markdown
                 </button>
@@ -41,7 +47,7 @@ export default function SessionOutput({ sessionConfig }: SessionOutputProps) {
                     />
                 </div>
                 {mode === 'markdown' && (
-                    <MarkdownView content={ansiToMarkdown(outputBufferRef.current)} />
+                    <MarkdownView content={markdownContent} />
                 )}
             </div>
         </div>
