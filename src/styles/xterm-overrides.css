@@ -1,10 +1,13 @@
-/* xterm.js overrides for consistent styling */
+/* ═══════════════════════════════════════════════════
+   XTERM.JS OVERRIDES
+   ═══════════════════════════════════════════════════ */
+
 .xterm {
     padding: 4px;
 }
 
 .xterm-viewport::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .xterm-viewport::-webkit-scrollbar-track {
@@ -13,102 +16,136 @@
 
 .xterm-viewport::-webkit-scrollbar-thumb {
     background: var(--border);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .xterm-viewport::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
 
-/* Markdown view styling */
+/* ═══════════════════════════════════════════════════
+   MARKDOWN VIEW — Refined typography
+   ═══════════════════════════════════════════════════ */
+
 .markdown-view {
-    padding: 16px 24px;
+    padding: 20px 28px;
     overflow-y: auto;
     height: 100%;
     background: var(--bg-primary);
     color: var(--text-primary);
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .markdown-view h1, .markdown-view h2, .markdown-view h3 {
     color: var(--text-primary);
-    margin: 16px 0 8px;
+    margin: 20px 0 10px;
+    letter-spacing: -0.3px;
 }
 
-.markdown-view h1 { font-size: 24px; }
-.markdown-view h2 { font-size: 20px; }
-.markdown-view h3 { font-size: 16px; }
+.markdown-view h1 {
+    font-size: 24px;
+    font-weight: 700;
+}
+.markdown-view h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+.markdown-view h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
 
 .markdown-view p {
-    margin: 8px 0;
+    margin: 10px 0;
 }
 
 .markdown-view code {
-    font-family: 'Cascadia Code', 'Fira Code', monospace;
-    background: var(--bg-tertiary);
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-family: var(--font-mono);
+    background: var(--accent-dim);
+    padding: 2px 7px;
+    border-radius: 5px;
     font-size: 13px;
+    color: var(--accent);
 }
 
 .markdown-view pre {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 14px 18px;
     overflow-x: auto;
-    margin: 12px 0;
+    margin: 14px 0;
 }
 
 .markdown-view pre code {
     background: none;
     padding: 0;
+    color: var(--text-secondary);
 }
 
 .markdown-view blockquote {
     border-left: 3px solid var(--accent);
-    padding-left: 12px;
+    padding: 8px 16px;
     color: var(--text-muted);
-    margin: 12px 0;
+    margin: 14px 0;
+    background: var(--accent-ghost);
+    border-radius: 0 8px 8px 0;
 }
 
 .markdown-view table {
     border-collapse: collapse;
     width: 100%;
-    margin: 12px 0;
+    margin: 14px 0;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .markdown-view th, .markdown-view td {
     border: 1px solid var(--border);
-    padding: 8px 12px;
+    padding: 10px 14px;
     text-align: left;
 }
 
 .markdown-view th {
     background: var(--bg-tertiary);
     font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .markdown-view a {
     color: var(--accent);
     text-decoration: none;
+    transition: color var(--duration-fast);
 }
 
 .markdown-view a:hover {
+    color: var(--accent-hover);
     text-decoration: underline;
 }
 
 .markdown-view ul, .markdown-view ol {
     padding-left: 24px;
-    margin: 8px 0;
+    margin: 10px 0;
 }
 
 .markdown-view li {
-    margin: 4px 0;
+    margin: 5px 0;
 }
 
-/* Output mode toggle */
+.markdown-view hr {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   OUTPUT MODE TOGGLE — Segmented control
+   ═══════════════════════════════════════════════════ */
+
 .session-output {
     display: flex;
     flex-direction: column;
@@ -125,21 +162,25 @@
 .mode-btn {
     padding: 4px 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     background: transparent;
     color: var(--text-muted);
+    font-family: var(--font-sans);
     font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
 .mode-btn:hover {
     color: var(--text-secondary);
+    background: var(--bg-hover);
 }
 
 .mode-btn.active {
     background: var(--bg-tertiary);
     color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .output-content {
