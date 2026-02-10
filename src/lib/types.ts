@@ -42,6 +42,22 @@ export interface PtyOutputEvent {
     message?: string;
 }
 
+// Saved Sessions (persistence)
+export interface SavedSession {
+    id: string;
+    name: string;
+    tool: string;
+    command: string;
+    args: string[];
+    workingDir: string;
+    envVars: Record<string, string>;
+    cols: number;
+    rows: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 // Templates
 export interface PromptTemplate {
     id: string;

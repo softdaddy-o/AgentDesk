@@ -50,6 +50,12 @@ pub fn run() {
             commands::get_session_cost_summary,
             commands::get_global_cost_summary,
             commands::get_platform_defaults,
+            commands::save_session_config,
+            commands::list_saved_sessions,
+            commands::list_restorable_sessions,
+            commands::update_saved_session_status,
+            commands::delete_saved_session,
+            commands::mark_stale_sessions_stopped,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

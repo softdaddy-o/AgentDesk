@@ -886,6 +886,48 @@ body {
     font-family: 'Cascadia Code', monospace;
 }
 
+/* Restore Dialog */
+.restore-session-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.restore-session-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color 0.15s;
+}
+
+.restore-session-item:hover {
+    border-color: var(--accent);
+}
+
+.restore-session-item input[type="checkbox"] {
+    accent-color: var(--accent);
+}
+
+.restore-session-name {
+    flex: 1;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.restore-session-tool {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
 /* Workspace - Tab Bar */
 .workspace-header {
     display: flex;

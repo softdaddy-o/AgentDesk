@@ -1,5 +1,5 @@
 import { invoke, Channel } from '@tauri-apps/api/core';
-import type { SessionConfig, PtyOutputEvent, PromptTemplate, CreateTemplate, UpdateTemplate, SearchQuery, SearchResult, RecordTokenUsage, TokenUsageRecord, SessionCostSummary, GlobalCostSummary } from './types';
+import type { SessionConfig, PtyOutputEvent, PromptTemplate, CreateTemplate, UpdateTemplate, SearchQuery, SearchResult, RecordTokenUsage, TokenUsageRecord, SessionCostSummary, GlobalCostSummary, SavedSession } from './types';
 
 export async function createSession(
     config: SessionConfig,
@@ -73,6 +73,31 @@ export async function getSessionCostSummary(sessionId: string): Promise<SessionC
 
 export async function getGlobalCostSummary(): Promise<GlobalCostSummary> {
     return invoke('get_global_cost_summary');
+}
+
+// Session Persistence
+export async function saveSessionConfig(input: SavedSession): Promise<void> {
+    return invoke('save_session_config', { input });
+}
+
+export async function listSavedSessions(): Promise<SavedSession[]> {
+    return invoke('list_saved_sessions');
+}
+
+export async function listRestorableSessions(): Promise<SavedSession[]> {
+    return invoke('list_restorable_sessions');
+}
+
+export async function updateSavedSessionStatus(id: string, status: string): Promise<void> {
+    return invoke('update_saved_session_status', { id, status });
+}
+
+export async function deleteSavedSession(id: string): Promise<void> {
+    return invoke('delete_saved_session', { id });
+}
+
+export async function markStaleSessionsStopped(): Promise<void> {
+    return invoke('mark_stale_sessions_stopped');
 }
 
 // Platform

@@ -4,6 +4,7 @@ const MIGRATIONS: &[(&str, &str)] = &[
     ("001_initial_schema", include_str!("../../migrations/001_initial_schema.sql")),
     ("002_add_templates", include_str!("../../migrations/002_add_templates.sql")),
     ("003_add_monitoring", include_str!("../../migrations/003_add_monitoring.sql")),
+    ("004_add_sessions", include_str!("../../migrations/004_add_sessions.sql")),
 ];
 
 pub fn run_migrations(conn: &Connection) -> Result<(), String> {

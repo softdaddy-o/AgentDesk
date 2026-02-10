@@ -4,9 +4,18 @@ import { useSessionStore } from '../stores/sessionStore';
 import SessionCard from '../components/Session/SessionCard';
 import SessionConfigDialog from '../components/Session/SessionConfigDialog';
 import QuickLaunchBar from '../components/Session/QuickLaunchBar';
-import { stopSession, getPlatformDefaults, type PlatformDefaults } from '../lib/tauri-commands';
+import RestoreDialog from '../components/Session/RestoreDialog';
+import {
+    stopSession,
+    getPlatformDefaults,
+    saveSessionConfig,
+    listRestorableSessions,
+    updateSavedSessionStatus,
+    markStaleSessionsStopped,
+    type PlatformDefaults,
+} from '../lib/tauri-commands';
 import { DEFAULT_COLS, DEFAULT_ROWS, TOOL_COMMANDS } from '../lib/constants';
-import type { CliTool, SessionConfig } from '../lib/types';
+import type { CliTool, SessionConfig, SavedSession } from '../lib/types';
 
 export default function DashboardPage() {
     const sessions = useSessionStore((s) => s.sessions);
@@ -14,10 +23,17 @@ export default function DashboardPage() {
     const setActiveSession = useSessionStore((s) => s.setActiveSession);
     const [showDialog, setShowDialog] = useState(false);
     const [platform, setPlatform] = useState<PlatformDefaults | null>(null);
+    const [restorableSessions, setRestorableSessions] = useState<SavedSession[]>([]);
     const navigate = useNavigate();
 
+    // On mount: load platform defaults and check for restorable sessions
     useEffect(() => {
         getPlatformDefaults().then(setPlatform);
+        listRestorableSessions().then((sessions) => {
+            if (sessions.length > 0) {
+                setRestorableSessions(sessions);
+            }
+        });
     }, []);
 
     const handleCreate = useCallback(
@@ -40,6 +56,23 @@ export default function DashboardPage() {
             addSession(config);
             setActiveSession(id);
             setShowDialog(false);
+
+            // Persist to DB
+            saveSessionConfig({
+                id: config.id,
+                name: config.name,
+                tool: config.tool,
+                command: config.command,
+                args: config.args,
+                workingDir: config.workingDir,
+                envVars: config.envVars,
+                cols: config.cols,
+                rows: config.rows,
+                status: 'running',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+
             navigate(`/session/${id}`);
         },
         [addSession, setActiveSession, navigate, platform],
@@ -62,6 +95,44 @@ export default function DashboardPage() {
 
     const handleStop = useCallback((id: string) => {
         stopSession(id);
+        updateSavedSessionStatus(id, 'stopped');
+    }, []);
+
+    const handleRestore = useCallback(
+        (sessionIds: string[]) => {
+            const toRestore = restorableSessions.filter((s) => sessionIds.includes(s.id));
+            for (const saved of toRestore) {
+                const config: SessionConfig = {
+                    id: saved.id,
+                    name: saved.name,
+                    tool: saved.tool as CliTool,
+                    command: saved.command,
+                    args: saved.args,
+                    workingDir: saved.workingDir,
+                    envVars: saved.envVars,
+                    cols: saved.cols,
+                    rows: saved.rows,
+                };
+                addSession(config);
+                updateSavedSessionStatus(saved.id, 'running');
+            }
+            // Mark non-restored as stopped
+            const dismissed = restorableSessions.filter((s) => !sessionIds.includes(s.id));
+            for (const s of dismissed) {
+                updateSavedSessionStatus(s.id, 'stopped');
+            }
+            setRestorableSessions([]);
+            if (toRestore.length > 0) {
+                setActiveSession(toRestore[0].id);
+                navigate(`/session/${toRestore[0].id}`);
+            }
+        },
+        [restorableSessions, addSession, setActiveSession, navigate],
+    );
+
+    const handleDismissRestore = useCallback(() => {
+        markStaleSessionsStopped();
+        setRestorableSessions([]);
     }, []);
 
     const sessionList = [...sessions.entries()];
@@ -101,6 +172,13 @@ export default function DashboardPage() {
                 <SessionConfigDialog
                     onClose={() => setShowDialog(false)}
                     onCreate={handleCreate}
+                />
+            )}
+            {restorableSessions.length > 0 && (
+                <RestoreDialog
+                    sessions={restorableSessions}
+                    onRestore={handleRestore}
+                    onDismiss={handleDismissRestore}
                 />
             )}
         </div>
