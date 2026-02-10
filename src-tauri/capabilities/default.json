@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/nicedoc/tauri2/main/capabilities.schema.json",
+    "identifier": "default",
+    "description": "Default capabilities for AgentDesk",
+    "windows": ["main"],
+    "permissions": [
+        "core:default",
+        "shell:allow-open"
+    ]
+}
