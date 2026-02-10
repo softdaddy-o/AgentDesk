@@ -1,7 +1,8 @@
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::ipc::Channel;
 
+use crate::db::DbPool;
 use crate::models::session::{PtyOutputEvent, SessionConfig};
 use crate::pty::session::PtySession;
 
@@ -20,8 +21,9 @@ impl PtyManager {
         &self,
         config: &SessionConfig,
         channel: Channel<PtyOutputEvent>,
+        db: Arc<DbPool>,
     ) -> Result<String, String> {
-        let session = PtySession::spawn(config, channel)?;
+        let session = PtySession::spawn(config, channel, db)?;
         let id = session.session_id().to_string();
         self.sessions
             .lock()

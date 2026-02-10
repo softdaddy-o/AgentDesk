@@ -10,7 +10,7 @@ pub fn create_session(
     config: SessionConfig,
     on_event: Channel<PtyOutputEvent>,
 ) -> Result<String, String> {
-    state.pty_manager.create_session(&config, on_event)
+    state.pty_manager.create_session(&config, on_event, state.db.clone())
 }
 
 #[tauri::command]

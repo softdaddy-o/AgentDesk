@@ -1,9 +1,14 @@
 use portable_pty::{native_pty_system, CommandBuilder, MasterPty, PtySize};
 use std::io::{Read, Write};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 use tauri::ipc::Channel;
 
+use crate::db::DbPool;
 use crate::models::session::{PtyOutputEvent, SessionConfig};
+
+const FLUSH_INTERVAL: Duration = Duration::from_secs(5);
+const FLUSH_SIZE: usize = 32 * 1024; // 32KB
 
 pub struct PtySession {
     master: Arc<Mutex<Box<dyn MasterPty + Send>>>,
@@ -12,7 +17,7 @@ pub struct PtySession {
 }
 
 impl PtySession {
-    pub fn spawn(config: &SessionConfig, channel: Channel<PtyOutputEvent>) -> Result<Self, String> {
+    pub fn spawn(config: &SessionConfig, channel: Channel<PtyOutputEvent>, db: Arc<DbPool>) -> Result<Self, String> {
         let pty_system = native_pty_system();
 
         let pair = pty_system
@@ -56,12 +61,16 @@ impl PtySession {
         let session_id = config.id.clone();
         let channel_session_id = session_id.clone();
 
-        // Spawn reader thread
+        // Spawn reader thread with log batching
         std::thread::spawn(move || {
             let mut buf = [0u8; 4096];
+            let mut log_buffer: Vec<u8> = Vec::new();
+            let mut last_flush = Instant::now();
+
             loop {
                 match reader.read(&mut buf) {
                     Ok(0) => {
+                        flush_log(&db, &channel_session_id, &mut log_buffer);
                         let _ = channel.send(PtyOutputEvent::Exited {
                             session_id: channel_session_id.clone(),
                             exit_code: None,
@@ -73,8 +82,16 @@ impl PtySession {
                             session_id: channel_session_id.clone(),
                             data: buf[..n].to_vec(),
                         });
+
+                        log_buffer.extend_from_slice(&buf[..n]);
+
+                        if log_buffer.len() >= FLUSH_SIZE || last_flush.elapsed() >= FLUSH_INTERVAL {
+                            flush_log(&db, &channel_session_id, &mut log_buffer);
+                            last_flush = Instant::now();
+                        }
                     }
                     Err(e) => {
+                        flush_log(&db, &channel_session_id, &mut log_buffer);
                         let _ = channel.send(PtyOutputEvent::Error {
                             session_id: channel_session_id.clone(),
                             message: format!("Read error: {e}"),
@@ -116,4 +133,14 @@ impl PtySession {
     pub fn session_id(&self) -> &str {
         &self.session_id
     }
+}
+
+fn flush_log(db: &Arc<DbPool>, session_id: &str, buffer: &mut Vec<u8>) {
+    if buffer.is_empty() {
+        return;
+    }
+    let _ = db.with_conn(|conn| {
+        crate::db::history_repo::insert_log(conn, session_id, buffer)
+    });
+    buffer.clear();
 }
