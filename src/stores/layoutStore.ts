@@ -12,6 +12,9 @@ interface LayoutState {
     splitDirection: SplitDirection;
     panes: Pane[];
     activePaneId: string;
+    splitRatio: number;       // 0-1, for horizontal/vertical (first pane fraction)
+    gridRatioH: number;       // horizontal ratio for grid
+    gridRatioV: number;       // vertical ratio for grid
 
     splitHorizontal: () => void;
     splitVertical: () => void;
@@ -20,6 +23,9 @@ interface LayoutState {
     closePane: (paneId: string) => void;
     setActivePane: (paneId: string) => void;
     setPaneSession: (paneId: string, sessionId: string) => void;
+    setSplitRatio: (ratio: number) => void;
+    setGridRatioH: (ratio: number) => void;
+    setGridRatioV: (ratio: number) => void;
 }
 
 const DEFAULT_PANE: Pane = { id: 'pane-1', sessionId: null };
@@ -32,12 +38,19 @@ function makePanes(count: number, existing: Pane[]): Pane[] {
     return panes;
 }
 
+function clampRatio(ratio: number): number {
+    return Math.max(0.15, Math.min(0.85, ratio));
+}
+
 export const useLayoutStore = create<LayoutState>()(
     persist(
         (set) => ({
             splitDirection: 'none',
             panes: [DEFAULT_PANE],
             activePaneId: 'pane-1',
+            splitRatio: 0.5,
+            gridRatioH: 0.5,
+            gridRatioV: 0.5,
 
             splitHorizontal: () =>
                 set((state) => {
@@ -45,6 +58,7 @@ export const useLayoutStore = create<LayoutState>()(
                     return {
                         splitDirection: 'horizontal',
                         panes: makePanes(2, state.panes),
+                        splitRatio: 0.5,
                     };
                 }),
 
@@ -54,6 +68,7 @@ export const useLayoutStore = create<LayoutState>()(
                     return {
                         splitDirection: 'vertical',
                         panes: makePanes(2, state.panes),
+                        splitRatio: 0.5,
                     };
                 }),
 
@@ -63,6 +78,8 @@ export const useLayoutStore = create<LayoutState>()(
                     return {
                         splitDirection: 'grid',
                         panes: makePanes(4, state.panes),
+                        gridRatioH: 0.5,
+                        gridRatioV: 0.5,
                     };
                 }),
 
@@ -71,6 +88,7 @@ export const useLayoutStore = create<LayoutState>()(
                     splitDirection: 'none',
                     panes: [state.panes[0] ?? DEFAULT_PANE],
                     activePaneId: state.panes[0]?.id ?? 'pane-1',
+                    splitRatio: 0.5,
                 })),
 
             closePane: (paneId) =>
@@ -96,11 +114,18 @@ export const useLayoutStore = create<LayoutState>()(
                         p.id === paneId ? { ...p, sessionId } : p,
                     ),
                 })),
+
+            setSplitRatio: (ratio) => set({ splitRatio: clampRatio(ratio) }),
+            setGridRatioH: (ratio) => set({ gridRatioH: clampRatio(ratio) }),
+            setGridRatioV: (ratio) => set({ gridRatioV: clampRatio(ratio) }),
         }),
         {
             name: 'agentdesk-layout',
             partialize: (state) => ({
                 splitDirection: state.splitDirection,
+                splitRatio: state.splitRatio,
+                gridRatioH: state.gridRatioH,
+                gridRatioV: state.gridRatioV,
             }),
         },
     ),

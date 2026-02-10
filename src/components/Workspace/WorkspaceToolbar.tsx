@@ -10,33 +10,46 @@ export default function WorkspaceToolbar() {
     return (
         <div className="workspace-toolbar">
             <button
-                className={`toolbar-btn split-btn ${splitDirection === 'horizontal' ? 'active' : ''}`}
+                className={`ws-tool-btn ${splitDirection === 'horizontal' ? 'active' : ''}`}
                 onClick={splitHorizontal}
-                title="Split horizontal (Ctrl+Shift+D)"
+                title="Split left/right (Ctrl+Shift+D)"
             >
-                Split H
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="6" height="14" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="9" y="1" width="6" height="14" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
             </button>
             <button
-                className={`toolbar-btn split-btn ${splitDirection === 'vertical' ? 'active' : ''}`}
+                className={`ws-tool-btn ${splitDirection === 'vertical' ? 'active' : ''}`}
                 onClick={splitVertical}
-                title="Split vertical (Ctrl+Shift+E)"
+                title="Split top/bottom (Ctrl+Shift+E)"
             >
-                Split V
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="14" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="1" y="9" width="14" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
             </button>
             <button
-                className={`toolbar-btn split-btn ${splitDirection === 'grid' ? 'active' : ''}`}
+                className={`ws-tool-btn ${splitDirection === 'grid' ? 'active' : ''}`}
                 onClick={splitGrid}
-                title="Grid layout (Ctrl+Shift+G)"
+                title="Grid 2x2 (Ctrl+Shift+G)"
             >
-                Grid
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
             </button>
             {splitDirection !== 'none' && (
                 <button
-                    className="toolbar-btn split-btn"
+                    className="ws-tool-btn ws-close-split"
                     onClick={closeSplit}
                     title="Close split (Ctrl+Shift+W)"
                 >
-                    Close Split
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
                 </button>
             )}
         </div>

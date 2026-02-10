@@ -999,20 +999,40 @@ body {
 .workspace-toolbar {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
     padding: 0 8px;
     flex-shrink: 0;
 }
 
-.split-btn {
-    padding: 4px 8px !important;
-    font-size: 11px !important;
+.ws-tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
 }
 
-.split-btn.active {
-    background: var(--accent) !important;
-    color: var(--bg-primary) !important;
-    border-color: var(--accent) !important;
+.ws-tool-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.ws-tool-btn.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
+.ws-close-split:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 /* Workspace - Split Layout */
@@ -1020,7 +1040,6 @@ body {
     flex: 1;
     display: flex;
     overflow: hidden;
-    gap: 2px;
 }
 
 .split-none {
@@ -1035,13 +1054,43 @@ body {
     flex-direction: column;
 }
 
-.split-grid {
-    flex-wrap: wrap;
+.split-grid-layout {
+    flex-direction: column;
 }
 
-.split-grid .workspace-pane {
-    width: calc(50% - 1px);
-    height: calc(50% - 1px);
+.split-grid-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.split-pane {
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Resize Handles */
+.resize-handle {
+    flex-shrink: 0;
+    background: var(--border);
+    transition: background 0.15s;
+    position: relative;
+    z-index: 10;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+    background: var(--accent);
+}
+
+.resize-handle-h {
+    width: 4px;
+    cursor: col-resize;
+}
+
+.resize-handle-v {
+    height: 4px;
+    cursor: row-resize;
 }
 
 /* Workspace - Pane */
