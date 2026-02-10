@@ -18,6 +18,8 @@ export default function Sidebar() {
     };
 
     const isOnDashboard = location.pathname === '/';
+    const isOnTemplates = location.pathname === '/templates';
+    const isOnHistory = location.pathname === '/history';
     const isOnSettings = location.pathname === '/settings';
 
     return (
@@ -62,6 +64,20 @@ export default function Sidebar() {
                         );
                     })}
                 </div>
+
+                <div className="sidebar-section-label">Tools</div>
+                <button
+                    className={`sidebar-link ${isOnTemplates ? 'active' : ''}`}
+                    onClick={() => navigate('/templates')}
+                >
+                    Templates
+                </button>
+                <button
+                    className={`sidebar-link ${isOnHistory ? 'active' : ''}`}
+                    onClick={() => navigate('/history')}
+                >
+                    History
+                </button>
 
                 <div className="sidebar-spacer" />
 

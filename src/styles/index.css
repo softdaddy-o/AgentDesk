@@ -595,6 +595,190 @@ body {
     color: var(--accent);
 }
 
+/* Templates Page */
+.templates-page {
+    padding: 24px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.template-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.template-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.template-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.template-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.template-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.template-prompt {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.template-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    color: var(--accent);
+    border-radius: 4px;
+}
+
+.template-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.template-editor-dialog {
+    min-width: 500px;
+    max-width: 600px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s;
+}
+
+.form-group textarea:focus {
+    border-color: var(--accent);
+}
+
+/* History Page */
+.history-page {
+    padding: 24px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.history-search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.history-search-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+}
+
+.history-search-input:focus {
+    border-color: var(--accent);
+}
+
+.history-results-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.history-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-entry {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.history-entry-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    font-size: 12px;
+}
+
+.history-session-id {
+    font-family: 'Cascadia Code', monospace;
+    color: var(--accent);
+}
+
+.history-timestamp {
+    color: var(--text-muted);
+}
+
+.history-content {
+    padding: 12px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-content mark {
+    background: rgba(122, 162, 247, 0.3);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.load-more {
+    display: block;
+    margin: 16px auto;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;

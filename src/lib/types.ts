@@ -41,3 +41,51 @@ export interface PtyOutputEvent {
     exitCode?: number;
     message?: string;
 }
+
+// Templates
+export interface PromptTemplate {
+    id: string;
+    name: string;
+    tool: string;
+    prompt: string;
+    description: string;
+    tags: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateTemplate {
+    name: string;
+    tool: string;
+    prompt: string;
+    description: string;
+    tags: string[];
+}
+
+export interface UpdateTemplate {
+    name?: string;
+    tool?: string;
+    prompt?: string;
+    description?: string;
+    tags?: string[];
+}
+
+// History
+export interface HistoryEntry {
+    id: number;
+    sessionId: string;
+    content: string;
+    createdAt: string;
+}
+
+export interface SearchQuery {
+    query: string;
+    sessionId?: string;
+    limit?: number;
+    offset?: number;
+}
+
+export interface SearchResult {
+    entries: HistoryEntry[];
+    total: number;
+}
