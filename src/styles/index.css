@@ -595,6 +595,11 @@ body {
     color: var(--accent);
 }
 
+.about-text {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
 /* Templates Page */
 .templates-page {
     padding: 24px;

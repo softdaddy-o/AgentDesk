@@ -8,9 +8,10 @@ import '@xterm/xterm/css/xterm.css';
 
 interface TerminalViewProps {
     sessionConfig: SessionConfig;
+    onOutput?: (text: string) => void;
 }
 
-export default function TerminalView({ sessionConfig }: TerminalViewProps) {
+export default function TerminalView({ sessionConfig, onOutput }: TerminalViewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const sessionIdRef = useRef<string>(sessionConfig.id);
     const initializedRef = useRef(false);
@@ -37,6 +38,10 @@ export default function TerminalView({ sessionConfig }: TerminalViewProps) {
         onData: (data) => {
             write(data);
             updateActivity(sessionIdRef.current);
+            if (onOutput) {
+                const text = new TextDecoder().decode(data);
+                onOutput(text);
+            }
         },
         onExit: (exitCode) => {
             updateStatus(sessionIdRef.current, { type: 'Stopped' });
