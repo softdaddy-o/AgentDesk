@@ -139,6 +139,20 @@ fn flush_log(db: &Arc<DbPool>, session_id: &str, buffer: &mut Vec<u8>) {
     if buffer.is_empty() {
         return;
     }
+
+    // Scan for token usage patterns before flushing
+    if let Ok(text) = std::str::from_utf8(buffer) {
+        let records = super::token_parser::extract_token_usage(text, session_id);
+        if !records.is_empty() {
+            let _ = db.with_conn(|conn| {
+                for record in &records {
+                    let _ = crate::db::monitoring_repo::record_usage(conn, record);
+                }
+                Ok(())
+            });
+        }
+    }
+
     let _ = db.with_conn(|conn| {
         crate::db::history_repo::insert_log(conn, session_id, buffer)
     });
