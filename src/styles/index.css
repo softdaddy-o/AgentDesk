@@ -886,6 +886,149 @@ body {
     font-family: 'Cascadia Code', monospace;
 }
 
+/* Workspace - Tab Bar */
+.workspace-header {
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    gap: 1px;
+    padding: 0 4px;
+    min-height: 32px;
+}
+
+.tab-bar::-webkit-scrollbar {
+    height: 0;
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    max-width: 180px;
+}
+
+.tab-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+.tab-item.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tab-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tab-tool {
+    font-size: 10px;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* Workspace - Toolbar */
+.workspace-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 8px;
+    flex-shrink: 0;
+}
+
+.split-btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+}
+
+.split-btn.active {
+    background: var(--accent) !important;
+    color: var(--bg-primary) !important;
+    border-color: var(--accent) !important;
+}
+
+/* Workspace - Split Layout */
+.split-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.split-none {
+    flex-direction: column;
+}
+
+.split-horizontal {
+    flex-direction: row;
+}
+
+.split-vertical {
+    flex-direction: column;
+}
+
+.split-grid {
+    flex-wrap: wrap;
+}
+
+.split-grid .workspace-pane {
+    width: calc(50% - 1px);
+    height: calc(50% - 1px);
+}
+
+/* Workspace - Pane */
+.workspace-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    transition: border-color 0.15s;
+}
+
+.workspace-pane.pane-active {
+    border-color: var(--accent);
+}
+
+.empty-pane {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    background: var(--bg-primary);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;

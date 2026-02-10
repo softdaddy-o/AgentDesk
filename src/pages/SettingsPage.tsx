@@ -86,6 +86,26 @@ export default function SettingsPage() {
                         <span className="shortcut-keys">Ctrl+1-9</span>
                         <span>Jump to Session</span>
                     </div>
+                    <div className="shortcut-row">
+                        <span className="shortcut-keys">Ctrl+Shift+D</span>
+                        <span>Split Horizontal</span>
+                    </div>
+                    <div className="shortcut-row">
+                        <span className="shortcut-keys">Ctrl+Shift+E</span>
+                        <span>Split Vertical</span>
+                    </div>
+                    <div className="shortcut-row">
+                        <span className="shortcut-keys">Ctrl+Shift+G</span>
+                        <span>Grid Layout (2x2)</span>
+                    </div>
+                    <div className="shortcut-row">
+                        <span className="shortcut-keys">Ctrl+Shift+W</span>
+                        <span>Close Split</span>
+                    </div>
+                    <div className="shortcut-row">
+                        <span className="shortcut-keys">Ctrl+1-4</span>
+                        <span>Focus Pane</span>
+                    </div>
                 </div>
             </div>
 
