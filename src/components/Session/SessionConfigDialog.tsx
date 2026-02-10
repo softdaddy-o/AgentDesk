@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { open } from '@tauri-apps/plugin-dialog';
 import { TOOL_LABELS } from '../../lib/constants';
 import type { CliTool } from '../../lib/types';
 
@@ -13,6 +14,17 @@ export default function SessionConfigDialog({ onClose, onCreate }: SessionConfig
     const [workingDir, setWorkingDir] = useState('');
 
     const tools: CliTool[] = ['ClaudeCode', 'Codex', 'Aider', 'Cline', 'Custom'];
+
+    const handleBrowse = async () => {
+        try {
+            const selected = await open({ directory: true, title: 'Select Working Directory' });
+            if (selected) {
+                setWorkingDir(selected);
+            }
+        } catch (err) {
+            console.error('Failed to open directory picker:', err);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,12 +62,17 @@ export default function SessionConfigDialog({ onClose, onCreate }: SessionConfig
                 </div>
                 <div className="form-group">
                     <label>Working Directory</label>
-                    <input
-                        type="text"
-                        placeholder="C:\projects\my-app"
-                        value={workingDir}
-                        onChange={(e) => setWorkingDir(e.target.value)}
-                    />
+                    <div className="input-with-btn">
+                        <input
+                            type="text"
+                            placeholder="C:\projects\my-app"
+                            value={workingDir}
+                            onChange={(e) => setWorkingDir(e.target.value)}
+                        />
+                        <button type="button" className="btn-secondary browse-btn" onClick={handleBrowse}>
+                            Browse
+                        </button>
+                    </div>
                 </div>
                 <div className="dialog-actions">
                     <button type="button" className="btn-secondary" onClick={onClose}>

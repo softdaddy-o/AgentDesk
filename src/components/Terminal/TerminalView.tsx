@@ -60,14 +60,19 @@ export default function TerminalView({ sessionConfig, onOutput }: TerminalViewPr
         attach(containerRef.current);
 
         const channel = getChannel();
+        const sid = sessionConfig.id;
         createSession(sessionConfig, channel as never)
             .then(() => {
-                updateStatus(sessionConfig.id, { type: 'Running' });
+                updateStatus(sid, { type: 'Running' });
                 fit();
             })
             .catch((err) => {
-                updateStatus(sessionConfig.id, { type: 'Error', message: String(err) });
+                updateStatus(sid, { type: 'Error', message: String(err) });
             });
+
+        return () => {
+            initializedRef.current = false;
+        };
     }, [sessionConfig, attach, getChannel, fit, updateStatus]);
 
     return (

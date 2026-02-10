@@ -312,6 +312,20 @@ body {
     border-color: var(--accent);
 }
 
+.input-with-btn {
+    display: flex;
+    gap: 8px;
+}
+
+.input-with-btn input {
+    flex: 1;
+}
+
+.browse-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+}
+
 .tool-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
