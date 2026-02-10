@@ -44,6 +44,10 @@ pub fn run() {
             commands::search_history,
             commands::get_session_log,
             commands::insert_session_log,
+            commands::record_token_usage,
+            commands::get_session_usage,
+            commands::get_session_cost_summary,
+            commands::get_global_cost_summary,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

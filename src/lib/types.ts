@@ -89,3 +89,38 @@ export interface SearchResult {
     entries: HistoryEntry[];
     total: number;
 }
+
+// Monitoring
+export interface TokenUsageRecord {
+    id: number;
+    sessionId: string;
+    inputTokens: number;
+    outputTokens: number;
+    model: string;
+    costUsd: number;
+    recordedAt: string;
+}
+
+export interface RecordTokenUsage {
+    sessionId: string;
+    inputTokens: number;
+    outputTokens: number;
+    model: string;
+    costUsd: number;
+}
+
+export interface SessionCostSummary {
+    sessionId: string;
+    totalInputTokens: number;
+    totalOutputTokens: number;
+    totalCostUsd: number;
+    recordCount: number;
+}
+
+export interface GlobalCostSummary {
+    totalInputTokens: number;
+    totalOutputTokens: number;
+    totalCostUsd: number;
+    sessionCount: number;
+    perSession: SessionCostSummary[];
+}

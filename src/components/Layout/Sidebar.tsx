@@ -20,6 +20,7 @@ export default function Sidebar() {
     const isOnDashboard = location.pathname === '/';
     const isOnTemplates = location.pathname === '/templates';
     const isOnHistory = location.pathname === '/history';
+    const isOnMonitoring = location.pathname === '/monitoring';
     const isOnSettings = location.pathname === '/settings';
 
     return (
@@ -77,6 +78,12 @@ export default function Sidebar() {
                     onClick={() => navigate('/history')}
                 >
                     History
+                </button>
+                <button
+                    className={`sidebar-link ${isOnMonitoring ? 'active' : ''}`}
+                    onClick={() => navigate('/monitoring')}
+                >
+                    Monitoring
                 </button>
 
                 <div className="sidebar-spacer" />

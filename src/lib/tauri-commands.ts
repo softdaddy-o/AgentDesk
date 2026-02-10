@@ -1,5 +1,5 @@
 import { invoke, Channel } from '@tauri-apps/api/core';
-import type { SessionConfig, PtyOutputEvent, PromptTemplate, CreateTemplate, UpdateTemplate, SearchQuery, SearchResult } from './types';
+import type { SessionConfig, PtyOutputEvent, PromptTemplate, CreateTemplate, UpdateTemplate, SearchQuery, SearchResult, RecordTokenUsage, TokenUsageRecord, SessionCostSummary, GlobalCostSummary } from './types';
 
 export async function createSession(
     config: SessionConfig,
@@ -56,4 +56,21 @@ export async function getSessionLog(sessionId: string): Promise<string> {
 
 export async function insertSessionLog(sessionId: string, content: string): Promise<void> {
     return invoke('insert_session_log', { sessionId, content });
+}
+
+// Monitoring
+export async function recordTokenUsage(input: RecordTokenUsage): Promise<void> {
+    return invoke('record_token_usage', { input });
+}
+
+export async function getSessionUsage(sessionId: string): Promise<TokenUsageRecord[]> {
+    return invoke('get_session_usage', { sessionId });
+}
+
+export async function getSessionCostSummary(sessionId: string): Promise<SessionCostSummary> {
+    return invoke('get_session_cost_summary', { sessionId });
+}
+
+export async function getGlobalCostSummary(): Promise<GlobalCostSummary> {
+    return invoke('get_global_cost_summary');
 }
