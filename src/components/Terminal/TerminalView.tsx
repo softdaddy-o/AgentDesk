@@ -1,8 +1,9 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTerminal } from '../../hooks/useTerminal';
 import { usePtyChannel } from '../../hooks/usePtyChannel';
 import { createSession, writeToPty, resizePty } from '../../lib/tauri-commands';
 import { useSessionStore } from '../../stores/sessionStore';
+import { useToastStore } from '../../stores/toastStore';
 import type { SessionConfig } from '../../lib/types';
 import '@xterm/xterm/css/xterm.css';
 
@@ -17,6 +18,8 @@ export default function TerminalView({ sessionConfig, onOutput }: TerminalViewPr
     const initializedRef = useRef(false);
     const updateStatus = useSessionStore((s) => s.updateStatus);
     const updateActivity = useSessionStore((s) => s.updateActivity);
+    const addToast = useToastStore((s) => s.addToast);
+    const [error, setError] = useState<string | null>(null);
 
     const onData = useCallback(
         (data: string) => {
@@ -45,18 +48,18 @@ export default function TerminalView({ sessionConfig, onOutput }: TerminalViewPr
         },
         onExit: (exitCode) => {
             updateStatus(sessionIdRef.current, { type: 'Stopped' });
-            console.log(`Session ${sessionIdRef.current} exited with code ${exitCode}`);
+            addToast(`Session exited with code ${exitCode ?? 'unknown'}`, 'info');
         },
         onError: (message) => {
             updateStatus(sessionIdRef.current, { type: 'Error', message });
-            console.error(`Session ${sessionIdRef.current} error: ${message}`);
+            addToast(`Session error: ${message}`, 'error');
         },
     });
 
-    useEffect(() => {
-        if (!containerRef.current || initializedRef.current) return;
-        initializedRef.current = true;
+    const initSession = useCallback(() => {
+        if (!containerRef.current) return;
 
+        setError(null);
         attach(containerRef.current);
 
         const channel = getChannel();
@@ -67,22 +70,56 @@ export default function TerminalView({ sessionConfig, onOutput }: TerminalViewPr
                 fit();
             })
             .catch((err) => {
-                updateStatus(sid, { type: 'Error', message: String(err) });
+                const message = String(err);
+                updateStatus(sid, { type: 'Error', message });
+                setError(message);
+                addToast(`Failed to create session: ${message}`, 'error');
             });
+    }, [sessionConfig, attach, getChannel, fit, updateStatus, addToast]);
+
+    useEffect(() => {
+        if (!containerRef.current || initializedRef.current) return;
+        initializedRef.current = true;
+        initSession();
 
         return () => {
             initializedRef.current = false;
         };
-    }, [sessionConfig, attach, getChannel, fit, updateStatus]);
+    }, [initSession]);
+
+    const handleRetry = () => {
+        initializedRef.current = false;
+        setError(null);
+        // Re-trigger init on next render
+        setTimeout(() => {
+            if (containerRef.current) {
+                initializedRef.current = true;
+                initSession();
+            }
+        }, 0);
+    };
 
     return (
-        <div
-            ref={containerRef}
-            style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: '#1a1b26',
-            }}
-        />
+        <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#1a1b26' }}>
+            <div
+                ref={containerRef}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: error ? 'none' : 'block',
+                }}
+            />
+            {error && (
+                <div className="terminal-error-overlay">
+                    <div className="terminal-error-content">
+                        <h3>Failed to start session</h3>
+                        <p>{error}</p>
+                        <button className="btn-primary" onClick={handleRetry}>
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
