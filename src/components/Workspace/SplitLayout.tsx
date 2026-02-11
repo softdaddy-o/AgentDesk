@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { useLayoutStore, type PaneNode } from '../../stores/layoutStore';
 import PaneView from './PaneView';
 
@@ -9,6 +9,7 @@ export default function PaneTree({ node }: { node: PaneNode }) {
 
     return (
         <SplitContainer
+            key={node.id}
             splitId={node.id}
             direction={node.direction}
             ratio={node.ratio}
@@ -33,6 +34,14 @@ function SplitContainer({
 }) {
     const setSplitRatio = useLayoutStore((s) => s.setSplitRatio);
     const containerRef = useRef<HTMLDivElement>(null);
+    const dragCleanupRef = useRef<(() => void) | null>(null);
+
+    // Cleanup drag listeners if component unmounts mid-drag
+    useEffect(() => {
+        return () => {
+            dragCleanupRef.current?.();
+        };
+    }, []);
 
     const startDrag = useCallback(
         (e: React.MouseEvent) => {
@@ -49,13 +58,17 @@ function SplitContainer({
                 setSplitRatio(splitId, pos);
             };
 
-            const onUp = () => {
+            const cleanup = () => {
                 document.removeEventListener('mousemove', onMove);
                 document.removeEventListener('mouseup', onUp);
                 document.body.style.cursor = '';
                 document.body.style.userSelect = '';
+                dragCleanupRef.current = null;
             };
 
+            const onUp = () => cleanup();
+
+            dragCleanupRef.current = cleanup;
             document.body.style.cursor = isH ? 'col-resize' : 'row-resize';
             document.body.style.userSelect = 'none';
             document.addEventListener('mousemove', onMove);
@@ -74,14 +87,14 @@ function SplitContainer({
             className={`split-container ${isH ? 'split-h' : 'split-v'}`}
         >
             <div className="split-child" style={isH ? { width: firstSize } : { height: firstSize }}>
-                <PaneTree node={left} />
+                <PaneTree key={left.id} node={left} />
             </div>
             <div
                 className={`resize-handle ${isH ? 'resize-handle-h' : 'resize-handle-v'}`}
                 onMouseDown={startDrag}
             />
             <div className="split-child" style={isH ? { width: secondSize } : { height: secondSize }}>
-                <PaneTree node={right} />
+                <PaneTree key={right.id} node={right} />
             </div>
         </div>
     );

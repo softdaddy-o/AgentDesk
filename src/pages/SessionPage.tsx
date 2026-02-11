@@ -17,13 +17,15 @@ export default function SessionPage() {
     const splitPane = useLayoutStore((s) => s.splitPane);
     const closePane = useLayoutStore((s) => s.closePane);
 
-    // Sync URL session to the active pane
+    // Sync URL session to the active pane (only when URL changes)
     useEffect(() => {
         if (sessionId && sessions.has(sessionId)) {
-            setPaneSession(activePaneId, sessionId);
+            const currentActivePaneId = useLayoutStore.getState().activePaneId;
+            setPaneSession(currentActivePaneId, sessionId);
             setActiveSession(sessionId);
         }
-    }, [sessionId, activePaneId, setPaneSession, setActiveSession, sessions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionId]);
 
     // Keyboard shortcuts
     useEffect(() => {

@@ -163,7 +163,18 @@ export const useLayoutStore = create<LayoutState>()(
             name: 'agentdesk-layout',
             partialize: (state) => ({
                 root: state.root,
+                activePaneId: state.activePaneId,
             }),
+            onRehydrateStorage: () => (state) => {
+                // Validate activePaneId exists in the tree after hydration
+                if (state) {
+                    const leaf = findLeaf(state.root, state.activePaneId);
+                    if (!leaf) {
+                        const leaves = collectLeaves(state.root);
+                        state.activePaneId = leaves[0]?.id ?? 'pane-root';
+                    }
+                }
+            },
         },
     ),
 );
