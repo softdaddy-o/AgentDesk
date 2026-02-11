@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import AppShell from './components/Layout/AppShell';
 import DashboardPage from './pages/DashboardPage';
 import SessionPage from './pages/SessionPage';
+import TabWorkspacePage from './pages/TabWorkspacePage';
 import TemplatesPage from './pages/TemplatesPage';
 import HistoryPage from './pages/HistoryPage';
 import MonitoringPage from './pages/MonitoringPage';
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
             {
                 path: 'session/:sessionId',
                 element: <SessionPage />,
+            },
+            {
+                path: 'workspace',
+                element: <TabWorkspacePage />,
             },
             {
                 path: 'templates',

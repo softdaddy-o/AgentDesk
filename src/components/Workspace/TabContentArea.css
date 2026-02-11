@@ -1,0 +1,20 @@
+/* ═══════════════════════════════════════════════════
+   TAB CONTENT AREA
+   ═══════════════════════════════════════════════════ */
+
+.tab-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.tab-content-area-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}

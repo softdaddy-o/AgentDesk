@@ -18,6 +18,7 @@ export default function Sidebar() {
     };
 
     const isOnDashboard = location.pathname === '/';
+    const isOnWorkspace = location.pathname === '/workspace';
     const isOnTemplates = location.pathname === '/templates';
     const isOnHistory = location.pathname === '/history';
     const isOnMonitoring = location.pathname === '/monitoring';
@@ -36,6 +37,12 @@ export default function Sidebar() {
                     onClick={() => navigate('/')}
                 >
                     Dashboard
+                </button>
+                <button
+                    className={`sidebar-link ${isOnWorkspace ? 'active' : ''}`}
+                    onClick={() => navigate('/workspace')}
+                >
+                    Workspace (New)
                 </button>
 
                 <div className="sidebar-section-label">Sessions</div>

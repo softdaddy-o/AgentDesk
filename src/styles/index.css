@@ -27,6 +27,14 @@
     --success-dim: rgba(158, 206, 106, 0.12);
     --warning-dim: rgba(224, 175, 104, 0.12);
 
+    /* ── Activity States (for Tab & Grid System) ── */
+    --activity-running: #bb9af7;
+    --activity-running-glow: rgba(187, 154, 247, 0.4);
+    --activity-idle: #7aa2f7;
+    --activity-idle-glow: rgba(122, 162, 247, 0.4);
+    --activity-attention: #f7768e;
+    --activity-attention-glow: rgba(247, 118, 142, 0.6);
+
     /* ── Shadows ── */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);

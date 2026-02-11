@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════
+   TERMINAL GRID TAB (Dockview Container)
+   ═══════════════════════════════════════════════════ */
+
+.terminal-grid-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Dockview fills the container */
+.terminal-grid-tab > div {
+    flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   DOCKVIEW THEME OVERRIDES (AgentDesk Dark)
+   ═══════════════════════════════════════════════════ */
+
+.dockview-theme-agentdesk {
+    /* Backgrounds */
+    --dv-background-color: var(--bg-primary);
+    --dv-paneview-header-background-color: var(--bg-secondary);
+    --dv-group-view-background-color: var(--bg-tertiary);
+
+    /* Tabs (we hide these since we use top-level tabs) */
+    --dv-tabs-and-actions-container-background-color: var(--bg-secondary);
+    --dv-activegroup-visiblepanel-tab-background-color: var(--bg-hover);
+    --dv-tab-divider-color: var(--border);
+
+    /* Separators (resize handles) */
+    --dv-separator-border: var(--border);
+    --dv-separator-border-width: 1px;
+
+    /* Drag Overlay */
+    --dv-drag-over-background-color: var(--accent-dim);
+
+    /* Focus */
+    --dv-activegroup-header-background-color: var(--bg-secondary);
+    --dv-activegroup-header-border-color: var(--accent);
+
+    /* Text */
+    --dv-tab-label-color: var(--text-secondary);
+    --dv-activegroup-visiblepanel-tab-label-color: var(--text-primary);
+}
+
+/* Override default tab styling */
+.dockview-theme-agentdesk .dv-default-tab {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    padding: 0 12px;
+    border-radius: 0;
+    transition: background var(--duration-fast) ease;
+}
+
+.dockview-theme-agentdesk .dv-default-tab:hover {
+    background: var(--bg-hover);
+}
+
+/* Panel content fills space */
+.dockview-theme-agentdesk .dv-panel-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════
+   EMPTY PANEL (No Session Assigned)
+   ═══════════════════════════════════════════════════ */
+
+.empty-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    color: var(--text-muted);
+}
+
+.empty-panel p {
+    font-size: 14px;
+}
+
+.add-session-button {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.add-session-button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════ */
+
+/* Ensure minimum panel size */
+.dockview-theme-agentdesk .dv-panel {
+    min-width: 200px;
+    min-height: 150px;
+}
+
+/* Resize handle visibility */
+.dockview-theme-agentdesk .dv-resize-handle {
+    background: var(--border);
+    transition: background 0.15s ease;
+}
+
+.dockview-theme-agentdesk .dv-resize-handle:hover {
+    background: var(--accent);
+}

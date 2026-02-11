@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentDesk Tab & Grid Layout Mockup</title>
+    <style>
+        /* ═══════════════════════════════════════════════════
+           AgentDesk Tab & Grid Layout Mockup
+           Demonstrates: Tabs, Grid Cells, Activity States
+           ═══════════════════════════════════════════════════ */
+
+        :root {
+            /* Core Palette (Tokyonight) */
+            --bg-primary: #1a1b26;
+            --bg-secondary: #16161e;
+            --bg-tertiary: #24283b;
+            --bg-hover: #292e42;
+            --text-primary: #c0caf5;
+            --text-secondary: #a9b1d6;
+            --text-muted: #565f89;
+            --border: #3b4261;
+            --accent: #7aa2f7;
+            --accent-glow: rgba(122, 162, 247, 0.4);
+            --danger: #f7768e;
+            --success: #9ece6a;
+            --warning: #e0af68;
+
+            /* Activity States */
+            --activity-running: #bb9af7;
+            --activity-running-glow: rgba(187, 154, 247, 0.4);
+            --activity-idle: #7aa2f7;
+            --activity-attention: #f7768e;
+            --activity-attention-glow: rgba(247, 118, 142, 0.6);
+
+            /* Typography */
+            --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Cascadia Code', 'Consolas', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           LAYOUT
+           ═══════════════════════════════════════════════════ */
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           TOP TAB BAR
+           ═══════════════════════════════════════════════════ */
+
+        .tab-bar {
+            display: flex;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+        }
+
+        .tab-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            max-width: 200px;
+            padding: 0 16px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .tab-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .tab-item.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-item.blinking {
+            animation: tab-blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes tab-blink {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 0 rgba(247, 118, 142, 0);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: inset 0 -2px 0 var(--activity-attention),
+                            0 0 8px var(--activity-attention-glow);
+            }
+        }
+
+        .tab-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .blink-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--activity-attention);
+            animation: blink-dot 0.6s ease-in-out infinite;
+        }
+
+        @keyframes blink-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .close-button {
+            width: 16px;
+            height: 16px;
+            margin-left: auto;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: all 0.15s ease;
+        }
+
+        .tab-item:hover .close-button {
+            opacity: 1;
+        }
+
+        .close-button:hover {
+            color: var(--danger);
+        }
+
+        .add-tab-button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .add-tab-button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           GRID CONTAINER
+           ═══════════════════════════════════════════════════ */
+
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .grid-container.three-cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           TERMINAL CELL
+           ═══════════════════════════════════════════════════ */
+
+        .cell {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .cell.needs-attention {
+            border-color: var(--activity-attention);
+            animation: attention-pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes attention-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 var(--activity-attention-glow); }
+            50% { box-shadow: 0 0 0 4px var(--activity-attention-glow); }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           CELL TITLE BAR
+           ═══════════════════════════════════════════════════ */
+
+        .cell-title-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 32px;
+            padding: 0 12px;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .cell-title-bar.running::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                var(--activity-running),
+                transparent
+            );
+            animation: running-sweep 2s linear infinite;
+        }
+
+        @keyframes running-sweep {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .cell-title-bar.idle::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--activity-idle);
+        }
+
+        .cell-title-bar.blinking {
+            animation: title-bar-blink 1.2s ease-in-out infinite;
+        }
+
+        @keyframes title-bar-blink {
+            0%, 100% {
+                background: var(--bg-secondary);
+                border-bottom-color: var(--border);
+            }
+            50% {
+                background: rgba(247, 118, 142, 0.15);
+                border-bottom-color: var(--activity-attention);
+                box-shadow: inset 0 0 12px var(--activity-attention-glow);
+            }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-dot.starting {
+            background: var(--warning);
+        }
+
+        .status-dot.running {
+            background: var(--activity-running);
+            animation: pulse-running 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-running {
+            0%, 100% {
+                box-shadow: 0 0 0 0 var(--activity-running-glow);
+                opacity: 1;
+            }
+            50% {
+                box-shadow: 0 0 0 4px var(--activity-running-glow);
+                opacity: 0.8;
+            }
+        }
+
+        .status-dot.idle {
+            background: var(--activity-idle);
+        }
+
+        .status-dot.error {
+            background: var(--danger);
+        }
+
+        .status-dot.stopped {
+            background: #414868;
+        }
+
+        .cell-title-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cell-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .cell-title-bar:hover .cell-actions {
+            opacity: 1;
+        }
+
+        .cell-action-button {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .cell-action-button:hover {
+            color: var(--text-primary);
+        }
+
+        .cell-action-button.close:hover {
+            color: var(--danger);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           TERMINAL CONTENT (Mock)
+           ═══════════════════════════════════════════════════ */
+
+        .cell-content {
+            flex: 1;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            overflow: auto;
+            line-height: 1.5;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+        }
+
+        .prompt {
+            color: var(--accent);
+        }
+
+        .command {
+            color: var(--success);
+        }
+
+        .output {
+            color: var(--text-secondary);
+        }
+
+        .waiting {
+            color: var(--activity-attention);
+            animation: blink-cursor 1s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            50.01%, 100% { opacity: 0; }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           DEMO CONTROLS
+           ═══════════════════════════════════════════════════ */
+
+        .demo-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+        }
+
+        .demo-controls h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .demo-button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .demo-button:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+        }
+
+        .demo-button:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- TOP TAB BAR -->
+        <div class="tab-bar">
+            <button class="tab-item active">
+                <span class="tab-icon">􀙥</span>
+                <span>Frontend</span>
+                <span class="close-button">×</span>
+            </button>
+            <button class="tab-item blinking">
+                <span class="tab-icon">􀙥</span>
+                <span>Backend</span>
+                <span class="blink-indicator"></span>
+                <span class="close-button">×</span>
+            </button>
+            <button class="tab-item">
+                <span class="tab-icon">􀙥</span>
+                <span>DevOps</span>
+                <span class="close-button">×</span>
+            </button>
+            <button class="tab-item">
+                <span class="tab-icon">􀋲</span>
+                <span>Dashboard</span>
+                <span class="close-button">×</span>
+            </button>
+            <button class="add-tab-button" title="New Tab">+</button>
+        </div>
+
+        <!-- GRID CONTAINER -->
+        <div class="grid-container">
+            <!-- CELL 1: Running (Claude Code) -->
+            <div class="cell">
+                <div class="cell-title-bar running">
+                    <span class="status-dot running"></span>
+                    <span class="cell-title-text">claude-code</span>
+                    <div class="cell-actions">
+                        <button class="cell-action-button" title="Split">▼</button>
+                        <button class="cell-action-button" title="Maximize">⛶</button>
+                        <button class="cell-action-button close" title="Close">×</button>
+                    </div>
+                </div>
+                <div class="cell-content">
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">claude-code</span></div>
+                    <div class="terminal-line output">Reading task from GitHub issue #7...</div>
+                    <div class="terminal-line output">Analyzing codebase structure...</div>
+                    <div class="terminal-line output">Planning implementation phases...</div>
+                    <div class="terminal-line output">Writing code for TabStore component...</div>
+                    <div class="terminal-line output" style="color: var(--activity-running);">● Generating code... (2/5 files)</div>
+                </div>
+            </div>
+
+            <!-- CELL 2: Idle + Blinking (Cursor) -->
+            <div class="cell needs-attention">
+                <div class="cell-title-bar idle blinking">
+                    <span class="status-dot idle"></span>
+                    <span class="cell-title-text">cursor</span>
+                    <div class="cell-actions">
+                        <button class="cell-action-button" title="Split">▼</button>
+                        <button class="cell-action-button" title="Maximize">⛶</button>
+                        <button class="cell-action-button close" title="Close">×</button>
+                    </div>
+                </div>
+                <div class="cell-content">
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">cursor</span></div>
+                    <div class="terminal-line output">Implemented DockviewTheme integration</div>
+                    <div class="terminal-line output">✓ Created 3 components</div>
+                    <div class="terminal-line output">✓ Updated 5 files</div>
+                    <div class="terminal-line output">✓ Tests passing (12/12)</div>
+                    <div class="terminal-line output" style="color: var(--success);">Task completed successfully!</div>
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="waiting">▊</span></div>
+                </div>
+            </div>
+
+            <!-- CELL 3: Stopped (Bash) -->
+            <div class="cell">
+                <div class="cell-title-bar">
+                    <span class="status-dot stopped"></span>
+                    <span class="cell-title-text">bash</span>
+                    <div class="cell-actions">
+                        <button class="cell-action-button" title="Split">▼</button>
+                        <button class="cell-action-button" title="Maximize">⛶</button>
+                        <button class="cell-action-button close" title="Close">×</button>
+                    </div>
+                </div>
+                <div class="cell-content">
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">npm run dev</span></div>
+                    <div class="terminal-line output">Compiled successfully!</div>
+                    <div class="terminal-line output">Server running at http://localhost:5173</div>
+                    <div class="terminal-line output" style="color: var(--text-muted);">Session ended (Ctrl+C)</div>
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="waiting">▊</span></div>
+                </div>
+            </div>
+
+            <!-- CELL 4: Starting (Aider) -->
+            <div class="cell">
+                <div class="cell-title-bar">
+                    <span class="status-dot starting"></span>
+                    <span class="cell-title-text">aider</span>
+                    <div class="cell-actions">
+                        <button class="cell-action-button" title="Split">▼</button>
+                        <button class="cell-action-button" title="Maximize">⛶</button>
+                        <button class="cell-action-button close" title="Close">×</button>
+                    </div>
+                </div>
+                <div class="cell-content">
+                    <div class="terminal-line"><span class="prompt">➜</span> <span class="command">aider</span></div>
+                    <div class="terminal-line output">Initializing Aider...</div>
+                    <div class="terminal-line output">Loading repository context...</div>
+                    <div class="terminal-line output" style="color: var(--warning);">⏳ Starting...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO CONTROLS -->
+    <div class="demo-controls">
+        <h3>Demo Controls</h3>
+        <button class="demo-button" onclick="toggleCellState('cell1')">Toggle Cell 1 (Running ↔ Idle)</button>
+        <button class="demo-button" onclick="toggleBlinking('cell2')">Toggle Cell 2 Blinking</button>
+        <button class="demo-button" onclick="toggleTabBlinking()">Toggle Backend Tab Blink</button>
+        <button class="demo-button" onclick="alert('This is a static mockup. Full interactivity requires React + Dockview integration.')">View Instructions</button>
+    </div>
+
+    <script>
+        // Simple demo interactions (static mockup)
+        let cell1Running = true;
+        let cell2Blinking = true;
+        let tabBlinking = true;
+
+        function toggleCellState(cellId) {
+            const titleBar = document.querySelector('.cell-title-bar.running') || document.querySelector('.cell-title-bar.idle');
+            if (cell1Running) {
+                titleBar.classList.remove('running');
+                titleBar.classList.add('idle');
+                cell1Running = false;
+            } else {
+                titleBar.classList.remove('idle');
+                titleBar.classList.add('running');
+                cell1Running = true;
+            }
+        }
+
+        function toggleBlinking(cellId) {
+            const cell = document.querySelector('.cell.needs-attention');
+            const titleBar = document.querySelector('.cell-title-bar.blinking');
+            if (cell2Blinking) {
+                cell.classList.remove('needs-attention');
+                titleBar.classList.remove('blinking');
+                cell2Blinking = false;
+            } else {
+                cell.classList.add('needs-attention');
+                titleBar.classList.add('blinking');
+                cell2Blinking = true;
+            }
+        }
+
+        function toggleTabBlinking() {
+            const tab = document.querySelector('.tab-item.blinking');
+            if (tabBlinking) {
+                tab.classList.remove('blinking');
+                tab.querySelector('.blink-indicator').style.display = 'none';
+                tabBlinking = false;
+            } else {
+                tab.classList.add('blinking');
+                tab.querySelector('.blink-indicator').style.display = 'block';
+                tabBlinking = true;
+            }
+        }
+
+        // Show mockup info on load
+        console.log('%cAgentDesk Tab & Grid Mockup', 'font-size: 20px; color: #7aa2f7;');
+        console.log('%cThis is a static HTML mockup demonstrating:', 'font-size: 14px; color: #a9b1d6;');
+        console.log('- Top-level tab bar with active/blinking states');
+        console.log('- Grid layout with 2x2 terminal cells');
+        console.log('- Cell title bars with status dots');
+        console.log('- Running animation (purple sweep)');
+        console.log('- Idle state (static blue bar)');
+        console.log('- Blinking attention state (pulsing red)');
+        console.log('- Hover-reveal action buttons');
+        console.log('%cUse the demo controls (bottom-right) to toggle states!', 'font-size: 14px; color: #9ece6a;');
+    </script>
+</body>
+</html>

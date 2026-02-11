@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run tauri:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(powershell -Command \"Get-Process -Name agentdesk -ErrorAction SilentlyContinue | Stop-Process -Force; Get-NetTCPConnection -LocalPort 1420 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_OwningProcess -Force -ErrorAction SilentlyContinue }; Write-Output ''done''\")",
+      "Skill(list-issues)",
+      "Bash(cargo check:*)",
+      "Bash(cargo test:*)",
+      "Bash(node -e:*)",
+      "Skill(finish-issue)"
+    ]
+  }
+}
