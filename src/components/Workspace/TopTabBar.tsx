@@ -3,8 +3,12 @@ import { useTabStore, type TabType } from '../../stores/tabStore';
 import './TopTabBar.css';
 
 const TAB_TYPE_ICONS: Record<TabType, string> = {
-    'terminal-grid': '􀙥',
     'dashboard': '􀋲',
+    'terminal-grid': '􀙥',
+    'sessions': '􀐾',
+    'templates': '􀉆',
+    'history': '􀐫',
+    'monitoring': '􀡋',
     'settings': '􀣋',
     'custom': '􀣋',
 };
@@ -15,8 +19,12 @@ interface RenameState {
 }
 
 const ADD_MENU_ITEMS: { type: TabType; label: string }[] = [
-    { type: 'terminal-grid', label: 'Terminal Grid' },
     { type: 'dashboard', label: 'Dashboard' },
+    { type: 'terminal-grid', label: 'Terminal Grid' },
+    { type: 'sessions', label: 'Sessions' },
+    { type: 'templates', label: 'Templates' },
+    { type: 'history', label: 'History' },
+    { type: 'monitoring', label: 'Monitoring' },
     { type: 'settings', label: 'Settings' },
 ];
 

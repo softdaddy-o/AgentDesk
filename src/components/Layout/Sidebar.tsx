@@ -17,12 +17,9 @@ export default function Sidebar() {
         Stopped: '#414868',
     };
 
-    const isOnDashboard = location.pathname === '/';
-    const isOnWorkspace = location.pathname === '/workspace';
     const isOnTemplates = location.pathname === '/templates';
     const isOnHistory = location.pathname === '/history';
     const isOnMonitoring = location.pathname === '/monitoring';
-    const isOnSettings = location.pathname === '/settings';
 
     return (
         <aside className="sidebar">
@@ -32,19 +29,6 @@ export default function Sidebar() {
                 </h1>
             </div>
             <nav className="sidebar-nav">
-                <button
-                    className={`sidebar-link ${isOnDashboard ? 'active' : ''}`}
-                    onClick={() => navigate('/')}
-                >
-                    Dashboard
-                </button>
-                <button
-                    className={`sidebar-link ${isOnWorkspace ? 'active' : ''}`}
-                    onClick={() => navigate('/workspace')}
-                >
-                    Workspace (New)
-                </button>
-
                 <div className="sidebar-section-label">Sessions</div>
                 <div className="session-list">
                     {[...sessions.entries()].map(([id, session]) => {
@@ -91,15 +75,6 @@ export default function Sidebar() {
                     onClick={() => navigate('/monitoring')}
                 >
                     Monitoring
-                </button>
-
-                <div className="sidebar-spacer" />
-
-                <button
-                    className={`sidebar-link ${isOnSettings ? 'active' : ''}`}
-                    onClick={() => navigate('/settings')}
-                >
-                    Settings
                 </button>
             </nav>
         </aside>

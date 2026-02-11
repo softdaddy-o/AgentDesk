@@ -102,6 +102,15 @@ body {
     width: 100vw;
 }
 
+/* No sidebar layout */
+.app-shell-no-sidebar {
+    grid-template-columns: 1fr;
+}
+
+.main-content-full {
+    width: 100%;
+}
+
 /* ═══════════════════════════════════════════════════
    SIDEBAR — Polished obsidian panel
    ═══════════════════════════════════════════════════ */

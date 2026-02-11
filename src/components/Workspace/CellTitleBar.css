@@ -1,0 +1,134 @@
+/* ═══════════════════════════════════════════════════
+   CELL TITLE BAR
+   ═══════════════════════════════════════════════════ */
+
+.cell-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+    padding: 0 8px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+/* Left side: drag handle + title */
+.cell-title-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Drag handle */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    cursor: move;
+    font-size: 12px;
+    letter-spacing: -2px;
+    transition: color var(--duration-fast) ease;
+}
+
+.drag-handle:hover {
+    color: var(--text-primary);
+}
+
+/* Title text */
+.cell-title-text {
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background var(--duration-fast) ease;
+}
+
+.cell-title-text:hover {
+    background: var(--bg-hover);
+}
+
+/* Title input (when editing) */
+.cell-title-input {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    outline: none;
+    min-width: 100px;
+}
+
+/* Session badge */
+.cell-session-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+/* Right side: action buttons */
+.cell-title-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Action buttons */
+.cell-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+}
+
+.cell-action-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.cell-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Close button (red on hover) */
+.cell-close-btn:hover {
+    background: rgba(247, 118, 142, 0.15);
+    border-color: var(--activity-attention);
+    color: var(--activity-attention);
+}
+
+/* Responsive: hide labels on narrow panels */
+@media (max-width: 400px) {
+    .cell-session-badge {
+        display: none;
+    }
+}

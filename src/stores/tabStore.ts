@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type TabType = 'terminal-grid' | 'dashboard' | 'settings' | 'custom';
+export type TabType = 'dashboard' | 'terminal-grid' | 'sessions' | 'templates' | 'history' | 'monitoring' | 'settings' | 'custom';
 
 export interface Tab {
     id: string;
@@ -34,8 +34,12 @@ function generateId(): string {
 }
 
 const TAB_TYPE_PREFIX: Record<TabType, string> = {
-    'terminal-grid': 'Workspace',
     'dashboard': 'Dashboard',
+    'terminal-grid': 'Terminal',
+    'sessions': 'Sessions',
+    'templates': 'Templates',
+    'history': 'History',
+    'monitoring': 'Monitoring',
     'settings': 'Settings',
     'custom': 'Custom',
 };
@@ -55,15 +59,23 @@ export const useTabStore = create<TabState>()(
         (set, get) => ({
             tabs: [
                 {
-                    id: 'default-tab',
-                    name: 'Workspace 1',
-                    type: 'terminal-grid',
+                    id: 'default-dashboard',
+                    name: 'Dashboard',
+                    type: 'dashboard',
                     layoutState: null,
                     order: 0,
                     createdAt: Date.now(),
                 },
+                {
+                    id: 'default-terminal',
+                    name: 'Terminal 1',
+                    type: 'terminal-grid',
+                    layoutState: null,
+                    order: 1,
+                    createdAt: Date.now(),
+                },
             ],
-            activeTabId: 'default-tab',
+            activeTabId: 'default-dashboard',
 
             addTab: (type: TabType, name?: string) => {
                 const id = generateId();

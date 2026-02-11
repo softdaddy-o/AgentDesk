@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
 import StatusBar from './StatusBar';
 import ErrorBoundary from '../ErrorBoundary';
 import ToastContainer from '../Toast/ToastContainer';
@@ -16,11 +15,8 @@ export default function AppShell() {
     }, [theme]);
 
     return (
-        <div className="app-shell">
-            <ErrorBoundary name="sidebar">
-                <Sidebar />
-            </ErrorBoundary>
-            <main className="main-content">
+        <div className="app-shell app-shell-no-sidebar">
+            <main className="main-content main-content-full">
                 <ErrorBoundary name="page">
                     <Outlet />
                 </ErrorBoundary>

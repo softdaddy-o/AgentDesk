@@ -25,10 +25,11 @@
     --dv-paneview-header-background-color: var(--bg-secondary);
     --dv-group-view-background-color: var(--bg-tertiary);
 
-    /* Tabs (we hide these since we use top-level tabs) */
+    /* Tabs (panel tabs within each workspace) */
     --dv-tabs-and-actions-container-background-color: var(--bg-secondary);
     --dv-activegroup-visiblepanel-tab-background-color: var(--bg-hover);
     --dv-tab-divider-color: var(--border);
+    --dv-tabs-container-height: 35px;
 
     /* Separators (resize handles) */
     --dv-separator-border: var(--border);
@@ -46,17 +47,20 @@
     --dv-activegroup-visiblepanel-tab-label-color: var(--text-primary);
 }
 
-/* Override default tab styling */
-.dockview-theme-agentdesk .dv-default-tab {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    padding: 0 12px;
-    border-radius: 0;
-    transition: background var(--duration-fast) ease;
+/* Hide Dockview tabs - we only want grid cells with custom title bars */
+.dockview-theme-agentdesk .dv-tabs-and-actions-container {
+    display: none !important;
 }
 
-.dockview-theme-agentdesk .dv-default-tab:hover {
-    background: var(--bg-hover);
+/* Group view takes full height without tab bar */
+.dockview-theme-agentdesk .dv-group-view {
+    height: 100%;
+}
+
+/* Content area fills available space */
+.dockview-theme-agentdesk .dv-content-container {
+    flex: 1;
+    height: 100%;
 }
 
 /* Panel content fills space */
@@ -64,6 +68,24 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════
+   TERMINAL PANEL CONTAINER
+   ═══════════════════════════════════════════════════ */
+
+.terminal-panel-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.terminal-content {
+    flex: 1;
+    overflow: hidden;
+    background: var(--bg-primary);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -119,4 +141,42 @@
 
 .dockview-theme-agentdesk .dv-resize-handle:hover {
     background: var(--accent);
+}
+
+/* Watermark styling */
+.dockview-theme-agentdesk .dv-watermark {
+    background: var(--bg-primary);
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    margin: 8px;
+}
+
+/* Drag overlay indicators */
+.dockview-theme-agentdesk .dv-drop-target-indicator {
+    background: var(--accent-dim);
+    border: 2px solid var(--accent);
+    opacity: 0.8;
+}
+
+/* Split button actions */
+.dockview-theme-agentdesk .dv-group-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dockview-theme-agentdesk .dv-group-header-actions button {
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dockview-theme-agentdesk .dv-group-header-actions button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--text-primary);
 }
